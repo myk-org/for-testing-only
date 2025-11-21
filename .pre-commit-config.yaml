@@ -1,54 +1,12 @@
 default_language_version:
-    python: python3
+  python: python3
 
 repos:
-  - repo: https://github.com/PyCQA/autoflake
-    rev: "v2.3.1"
+  - repo: local
     hooks:
-      - id: autoflake
-        args:
-          - --in-place
-          - --remove-unused-variables
-          - --remove-all-unused-imports
-
-  - repo: https://github.com/hadialqattan/pycln
-    rev: "v2.5.0"
-    hooks:
-        - id: pycln
-
-  - repo: https://github.com/PyCQA/isort
-    rev: "6.0.0"
-    hooks:
-      - id: isort
-
-  - repo: https://github.com/psf/black
-    rev: "25.1.0"
-    hooks:
-    - id: black
-
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v5.0.0"
-    hooks:
-    - id: check-merge-conflict
-    - id: debug-statements
-    - id: trailing-whitespace
-      args: [--markdown-linebreak-ext=md] # Do not process Markdown files.
-    - id: end-of-file-fixer
-    - id: check-ast
-    - id: check-builtin-literals
-
-  - repo: https://github.com/PyCQA/flake8
-    rev: "7.1.1"
-    hooks:
-      - id: flake8
-        args: [--max-line-length=120]
-        additional_dependencies: [
-          "git+https://github.com/RedHatQE/flake8-plugins.git",
-          "pep8-naming",
-          "flake8-mutable",
-        ]
-
-  - repo: https://github.com/Yelp/detect-secrets
-    rev: v1.5.0
-    hooks:
-      - id: detect-secrets
+      - id: check-validation
+        name: Check validation enabled
+        entry: uv run .pre-commit-scripts/check_validation.py
+        language: system
+        pass_filenames: false
+        always_run: true

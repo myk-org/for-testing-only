@@ -1,0 +1,7 @@
+approvers:
+  - myakove
+  - test-approver
+
+reviewers:
+  - myakove
+  - test-reviewer
