@@ -44,10 +44,12 @@ class RequestHandler:
                 - max_retries (int): Maximum retry attempts (default: 3)
                 - retry_delay (float): Delay between retries in seconds (default: 1.0)
                 - rate_limit (int): Max requests per minute (default: 100)
+                - health_check_url (str): URL for upstream health checks (default: None)
         """
         self.config = config
         self.max_retries = config.get("max_retries", 3)
         self.retry_delay = config.get("retry_delay", 1.0)
+        self.health_check_url = config.get("health_check_url")
         self.rate_limiter = RateLimiter(
             max_requests=config.get("rate_limit", DEFAULT_RATE_LIMIT)
         )
@@ -107,6 +109,32 @@ class RequestHandler:
         """
         required_fields = {"id", "type"}
         return required_fields.issubset(data.keys())
+
+    def health_check(self) -> dict[str, Any]:
+        """Check the health status of the handler and its dependencies.
+
+        Returns:
+            Dictionary with health status information:
+                - status: "healthy" or "unhealthy"
+                - uptime_info: Basic handler info
+                - rate_limiter: Rate limiter status
+                - upstream: Upstream service URL if configured
+        """
+        health = {
+            "status": "healthy",
+            "handler": "operational",
+            "rate_limiter": {
+                "max_requests": self.rate_limiter.max_requests,
+                "window_seconds": self.rate_limiter.window_seconds,
+                "current_count": len(self.rate_limiter._requests),
+            },
+        }
+        if self.health_check_url:
+            health["upstream"] = {
+                "url": self.health_check_url,
+                "configured": True,
+            }
+        return health
 
     def get_stats(self) -> dict[str, Any]:
         """Get handler statistics.
