@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 # Default rate limit: 100 requests per minute
 DEFAULT_RATE_LIMIT = 100
 DEFAULT_RATE_WINDOW = 60  # seconds
+DEFAULT_REQUEST_TIMEOUT = 30  # seconds
 
 
 class RateLimiter:
@@ -34,7 +35,7 @@ class RateLimiter:
 
 
 class RequestHandler:
-    """Handle incoming API requests with retry and rate limiting support."""
+    """Handle incoming API requests with retry, rate limiting, and timeout support."""
 
     def __init__(self, config: dict[str, Any]) -> None:
         """Initialize the request handler.
@@ -44,20 +45,22 @@ class RequestHandler:
                 - max_retries (int): Maximum retry attempts (default: 3)
                 - retry_delay (float): Delay between retries in seconds (default: 1.0)
                 - rate_limit (int): Max requests per minute (default: 100)
+                - request_timeout (int): Request timeout in seconds (default: 30)
                 - health_check_url (str): URL for upstream health checks (default: None)
         """
         self.config = config
         self.max_retries = config.get("max_retries", 3)
         self.retry_delay = config.get("retry_delay", 1.0)
+        self.request_timeout = config.get("request_timeout", DEFAULT_REQUEST_TIMEOUT)
         self.health_check_url = config.get("health_check_url")
         self.rate_limiter = RateLimiter(
             max_requests=config.get("rate_limit", DEFAULT_RATE_LIMIT)
         )
-        logger.info("RequestHandler initialized with retry=%d, rate_limit=%d",
-                     self.max_retries, self.rate_limiter.max_requests)
+        logger.info("RequestHandler initialized with retry=%d, rate_limit=%d, timeout=%d",
+                     self.max_retries, self.rate_limiter.max_requests, self.request_timeout)
 
     def process_request(self, data: dict[str, Any]) -> dict[str, Any]:
-        """Process an incoming request with rate limiting.
+        """Process an incoming request with rate limiting and timeout tracking.
 
         Args:
             data: Request data
@@ -67,12 +70,20 @@ class RequestHandler:
 
         Raises:
             RuntimeError: If rate limit is exceeded
+            TimeoutError: If processing exceeds request_timeout
         """
         if not self.rate_limiter.is_allowed():
             raise RuntimeError("Rate limit exceeded. Try again later.")
 
+        start_time = time.monotonic()
         logger.debug(f"Processing request: {data}")
-        return {"status": "success", "data": data}
+        result = {"status": "success", "data": data}
+
+        elapsed = time.monotonic() - start_time
+        if elapsed > self.request_timeout:
+            raise TimeoutError(f"Request processing exceeded timeout of {self.request_timeout}s")
+
+        return result
 
     def process_request_with_retry(self, data: dict[str, Any]) -> dict[str, Any]:
         """Process a request with automatic retry on failure.
@@ -140,11 +151,12 @@ class RequestHandler:
         """Get handler statistics.
 
         Returns:
-            Dictionary with rate limiter stats
+            Dictionary with handler configuration and rate limiter stats
         """
         return {
             "max_retries": self.max_retries,
             "retry_delay": self.retry_delay,
+            "request_timeout": self.request_timeout,
             "rate_limit": self.rate_limiter.max_requests,
             "rate_window": self.rate_limiter.window_seconds,
         }
