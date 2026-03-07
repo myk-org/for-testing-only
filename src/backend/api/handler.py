@@ -85,6 +85,40 @@ class RequestHandler:
 
         return result
 
+    def process_batch(self, requests: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Process multiple requests in a batch.
+
+        Each request is processed individually with validation and rate limiting.
+        Failed requests are included in the results with error details.
+
+        Args:
+            requests: List of request data dictionaries
+
+        Returns:
+            List of result dictionaries, one per request
+        """
+        results: list[dict[str, Any]] = []
+        for i, data in enumerate(requests):
+            try:
+                if not self.validate_request(data):
+                    results.append({
+                        "index": i,
+                        "status": "error",
+                        "error": "Validation failed: missing required fields 'id' and 'type'",
+                    })
+                    continue
+                result = self.process_request(data)
+                result["index"] = i
+                results.append(result)
+            except Exception as exc:
+                results.append({
+                    "index": i,
+                    "status": "error",
+                    "error": str(exc),
+                })
+        logger.info(f"Batch processed: {len(results)}/{len(requests)} requests")
+        return results
+
     def process_request_with_retry(self, data: dict[str, Any]) -> dict[str, Any]:
         """Process a request with automatic retry on failure.
 
