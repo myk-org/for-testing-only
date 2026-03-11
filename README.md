@@ -75,3 +75,5 @@ uv run pytest tests/ -v
 
 
 <\!-- E2E_TEST_20_3_MARKER -->
+
+_Last tested: 2026-03-11T15:27:43Z_
