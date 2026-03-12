@@ -2,15 +2,16 @@ def greet():
     return "Hello from DEV"
 
 def process_data(items):
-    result = []
-    for item in items:
-        result.append(item.upper())
-    return result
+    return [item.upper() for item in items]
+
+def validate(data):
+    return all(isinstance(d, str) for d in data)
 
 def main():
     print(greet())
     data = ["alpha", "beta", "gamma"]
-    print(process_data(data))
+    if validate(data):
+        print(process_data(data))
 
 if __name__ == "__main__":
     main()
