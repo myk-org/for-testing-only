@@ -77,3 +77,11 @@ uv run pytest tests/ -v
 <\!-- E2E_TEST_20_3_MARKER -->
 
 _Last tested: 2026-03-11T15:27:43Z_
+
+
+## E2E Incremental Test Section
+
+This section was added by the e2e incremental update test.
+It verifies that incremental documentation updates detect new code changes.
+
+e2e_incremental_test_function marker: e2e-incremental-marker-12345
