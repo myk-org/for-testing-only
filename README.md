@@ -78,3 +78,4 @@ uv run pytest tests/ -v
 
 _Last tested: 2026-03-11T15:27:43Z_
 # PR 1108 smoke test - Tue Jun  9 14:25:50 IDT 2026
+# CP retry test - Tue Jun  9 14:59:16 IDT 2026
