@@ -1,10 +1,18 @@
-# Cherry-pick conflict test - DEV version
-def get_greeting():
-    return "Hello from DEV branch - this is the dev version"
+class DataProcessor:
+    def __init__(self, config):
+        self.config = config
+        self.data = []
 
-def get_version():
-    return "2.0.0-dev"
+    def process(self, items):
+        result = []
+        for item in items:
+            if item.is_valid():
+                result.append(self._transform(item))
+        return result
 
-if __name__ == "__main__":
-    print(get_greeting())
-    print(f"Version: {get_version()}")
+    def _transform(self, item):
+        return {"id": item.id, "value": item.value * 2}
+
+    def export(self, format="json"):
+        import json
+        return json.dumps(self.data)
