@@ -32,3 +32,7 @@ class DataProcessor:
 
     def get_stats(self):
         return {"total": len(self.data), "processed": self.processed_count}
+
+    def reset(self):
+        self.data = []
+        self.processed_count = 0
