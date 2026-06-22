@@ -16,3 +16,7 @@ class DataProcessor:
     def export(self, format="json"):
         import json
         return json.dumps(self.data)
+
+    def reset(self):
+        self.data = []
+        self.processed_count = 0
