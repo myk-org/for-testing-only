@@ -13,6 +13,10 @@ class DataProcessor:
     def _transform(self, item):
         return {"id": item.id, "value": item.value * 2}
 
-    def export(self, format="json"):
+    def export(self, format="json", pretty=False):
         import json
-        return json.dumps(self.data)
+        indent = 2 if pretty else None
+        return json.dumps(self.data, indent=indent)
+
+    def get_stats(self):
+        return {"total": len(self.data), "processed": self.processed_count}
