@@ -2,6 +2,7 @@ class DataProcessor:
     def __init__(self, config):
         self.config = config
         self.data = []
+        self.processed_count = 0
 
     def process(self, items):
         result = []
@@ -16,3 +17,9 @@ class DataProcessor:
     def export(self, format="json"):
         import json
         return json.dumps(self.data)
+
+    def get_stats(self):
+        return {"total": len(self.data), "processed": self.processed_count}
+
+    def validate(self):
+        return len(self.data) > 0 and self.processed_count >= 0
