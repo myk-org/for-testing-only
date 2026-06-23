@@ -32,6 +32,3 @@ class DataProcessor:
 
     def get_stats(self):
         return {"total": len(self.data), "processed": self.processed_count}
-
-    def validate(self):
-        return len(self.data) > 0 and self.processed_count >= 0
