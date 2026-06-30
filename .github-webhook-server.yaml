@@ -1,0 +1,3 @@
+custom-commands:
+  - name: repo-specific-cmd
+    description: A command specific to this repo
