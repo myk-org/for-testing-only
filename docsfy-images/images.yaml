@@ -1,0 +1,8 @@
+- file: dashboard-expanded.png
+  description: "Project dashboard showing the sidebar with all projects, their branches, variants, and generation status indicators"
+
+- file: generate-form.png
+  description: "The new generation form where users configure repository URL, branch, AI provider, model, and vision settings before generating documentation"
+
+- file: docs-site-page.png
+  description: "A generated documentation page showing formatted content with syntax-highlighted code blocks, navigation sidebar, and table of contents"
