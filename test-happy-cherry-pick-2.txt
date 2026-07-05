@@ -1,1 +1,0 @@
-Happy path cherry-pick test file 2.
