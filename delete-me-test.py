@@ -1,11 +1,11 @@
-# Delete Me Test File
+# Delete Me Test File — MODIFIED ON RELEASE BRANCH
 
-def hello():
-    print('This file should be deleted by cherry-pick')
+def hello_modified():
+    print('This version was modified on the release branch')
 
-def goodbye():
-    print('Farewell')
+def extra_function():
+    print('Extra function only on release branch')
 
 if __name__ == '__main__':
-    hello()
-    goodbye()
+    hello_modified()
+    extra_function()
