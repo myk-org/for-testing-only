@@ -1,11 +1,29 @@
 [project]
-name = "test-repo"
-version = "0.1.0"
-description = "Test repository for GitHub webhook server integration tests"
+name = "taskflow"
+version = "2.4.1"
+description = "A lightweight task orchestration framework with plugin support, scheduling, and real-time monitoring"
 requires-python = ">=3.12"
 dependencies = [
-    "pytest>=8.0.0",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "pydantic>=2.6",
+    "sqlalchemy>=2.0",
+    "redis>=5.0",
+    "celery>=5.3",
+    "click>=8.1",
+    "structlog>=24.1",
+    "prometheus-client>=0.20",
+    "httpx>=0.27",
+    "jinja2>=3.1",
+    "cryptography>=42.0",
 ]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "coverage>=7.4", "mypy>=1.8", "ruff>=0.3"]
+
+[project.scripts]
+taskflow = "taskflow.cli:main"
+taskflow-worker = "taskflow.worker:start_worker"
 
 [build-system]
 requires = ["setuptools>=68.0"]
@@ -16,3 +34,12 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true

@@ -1,81 +1,109 @@
-# TEST REPOSITORY
+# TaskFlow
 
-This repository is used for integration testing of the GitHub Webhook Server.
+A lightweight task orchestration framework with plugin support, scheduling, and real-time monitoring.
 
-## Structure
+## Features
+
+- **Task Pipelines** — Define multi-step workflows as DAGs with dependency resolution
+- **Plugin System** — Extend with custom executors, notifiers, and storage backends
+- **Scheduling** — Cron-based and interval scheduling with timezone support
+- **Real-time Monitoring** — WebSocket-based dashboard with live task progress
+- **Retry & Circuit Breaking** — Configurable retry policies with exponential backoff
+- **Multi-tenant** — Isolated workspaces with RBAC and API key authentication
+- **Metrics** — Prometheus-compatible metrics for task duration, throughput, and error rates
+
+## Quick Start
+
+```bash
+# Install
+pip install taskflow
+
+# Start the server
+taskflow server --port 8000
+
+# Start a worker
+taskflow-worker --concurrency 4
+
+# Create a task via CLI
+taskflow run my-pipeline --input data.json
+```
+
+## Architecture
 
 ```
-├── OWNERS              # Root level approvers/reviewers
-├── src/
-│   ├── OWNERS          # Source approvers/reviewers
-│   └── backend/
-│       ├── OWNERS      # Backend approvers/reviewers
-│       └── api/
-│           ├── OWNERS  # API approvers/reviewers
-│           └── handler.py
-├── tests/
-│   ├── OWNERS          # Test approvers/reviewers
-│   └── test_handler.py
-├── tox.ini             # Tox configuration
-└── Dockerfile          # Container build configuration
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   REST API   │────▶│   Scheduler  │────▶│   Workers    │
+│  (FastAPI)   │     │  (Celery)    │     │  (Executors) │
+└──────┬───────┘     └──────────────┘     └──────┬───────┘
+       │                                         │
+       ▼                                         ▼
+┌──────────────┐                          ┌──────────────┐
+│   Storage    │                          │   Plugins    │
+│  (SQL/Redis) │                          │  (Registry)  │
+└──────────────┘                          └──────────────┘
 ```
 
-## Purpose
+## Configuration
 
-This repo validates:
+TaskFlow is configured via `taskflow.toml` or environment variables:
 
-- Nested OWNERS file discovery
-- Pre-commit hook execution
-- Tox test execution (pytest)
-- Container build and push
-- Python module installation (uv sync)
-- Webhook processing flows
+```toml
+[server]
+host = "0.0.0.0"
+port = 8000
+workers = 4
 
-## How to Toggle Tests (Pass/Fail)
+[database]
+url = "postgresql://localhost/taskflow"
+pool_size = 10
 
-All tests check `VALIDATION_ENABLED` in `tests/config.py`:
+[redis]
+url = "redis://localhost:6379/0"
+
+[scheduler]
+timezone = "UTC"
+max_concurrent_tasks = 50
+
+[security]
+secret_key = "${TASKFLOW_SECRET_KEY}"
+api_key_header = "X-API-Key"
+session_ttl = 3600
+```
+
+## API Overview
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/tasks` | GET | List all tasks with filtering |
+| `/api/tasks` | POST | Create a new task |
+| `/api/tasks/{id}` | GET | Get task details and status |
+| `/api/tasks/{id}/cancel` | POST | Cancel a running task |
+| `/api/pipelines` | GET | List pipeline definitions |
+| `/api/pipelines` | POST | Create a pipeline |
+| `/api/pipelines/{id}/run` | POST | Trigger a pipeline run |
+| `/api/metrics` | GET | Prometheus metrics endpoint |
+| `/api/health` | GET | Health check |
+| `/ws/tasks` | WS | Real-time task updates |
+
+## Plugin Development
 
 ```python
-# tests/config.py
-VALIDATION_ENABLED = True   # ← Change this to True/False
+from taskflow.plugins import ExecutorPlugin, hookimpl
+
+class MyExecutor(ExecutorPlugin):
+    name = "my-executor"
+
+    @hookimpl
+    def execute_task(self, task, context):
+        # Your custom execution logic
+        result = do_work(task.payload)
+        return {"status": "completed", "output": result}
+
+    @hookimpl
+    def on_task_failure(self, task, error):
+        notify_team(f"Task {task.id} failed: {error}")
 ```
 
-**To make tests PASS:**
+## License
 
-```bash
-# Set VALIDATION_ENABLED = True in tests/config.py
-```
-
-**To make tests FAIL:**
-
-```bash
-# Set VALIDATION_ENABLED = False in tests/config.py
-```
-
-This affects:
-
-- ✅ **Pre-commit**: `.pre-commit-scripts/check_validation.py` checks this value
-- ✅ **Tox/Pytest**: `tests/test_handler.py::test_validation_enabled` checks this value
-
-## Testing Locally
-
-```bash
-# Install dependencies
-uv sync
-
-# Run pre-commit
-prek run --all-files
-
-# Run tox
-uvx tox
-
-# Run pytest
-uv run pytest tests/ -v
-```
-
-
-<\!-- E2E_TEST_20_3_MARKER -->
-
-_Last tested: 2026-03-11T15:27:43Z_
-# PR 1108 smoke test - Tue Jun  9 14:25:50 IDT 2026
-# CP retry test - Tue Jun  9 14:59:16 IDT 2026
+MIT
