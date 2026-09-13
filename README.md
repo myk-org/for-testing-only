@@ -107,3 +107,4 @@ class MyExecutor(ExecutorPlugin):
 ## License
 
 MIT\n
+<!-- e2e harmless synchronize marker -->
