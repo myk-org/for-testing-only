@@ -1,6 +1,6 @@
 # TaskFlow
 
-A lightweight task orchestration framework with plugin support, scheduling, and real-time monitoring.
+A lightweight task orchestration framework with plugin support, scheduling, and real-time monitoring for PR 1211.
 
 ## Features
 
