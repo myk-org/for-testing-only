@@ -106,4 +106,4 @@ class MyExecutor(ExecutorPlugin):
 
 ## License
 
-MIT
+MIT\n
