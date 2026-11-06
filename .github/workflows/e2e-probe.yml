@@ -1,0 +1,7 @@
+name: e2e probe
+on: workflow_dispatch
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "e2e probe for security suspicious-path check"
