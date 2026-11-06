@@ -1,0 +1,5 @@
+approvers:
+  - myakove
+reviewers:
+  - myakove
+root-approvers: false
