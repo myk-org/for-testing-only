@@ -4,3 +4,4 @@ approvers:
 reviewers:
   - rnetser
   - myakove
+root-approvers: false
