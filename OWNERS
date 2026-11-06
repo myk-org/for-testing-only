@@ -1,0 +1,8 @@
+approvers:
+  - rnetser
+  - myakove
+reviewers:
+  - rnetser
+  - myakove
+dot-folders:
+  - .github
