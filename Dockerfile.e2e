@@ -9,4 +9,13 @@ ARG STATIC_VALUE=unset
 ARG SHELL_VALUE=unset
 ARG BAD_PLACEHOLDER=unset
 
-RUN echo "E2E_BUILD_INFO commit=$GIT_COMMIT ref=$GIT_REF built_at=$BUILT_AT repo=$REPO_NAME pr=$PR_NO static=$STATIC_VALUE shell=$SHELL_VALUE bad=$BAD_PLACEHOLDER"
+RUN test -n "$GIT_COMMIT" \
+ && test "$GIT_REF" = "pr-$PR_NO" \
+ && test -n "$BUILT_AT" \
+ && test "$REPO_NAME" = "myk-org/for-testing-only" \
+ && test "$STATIC_VALUE" = "plain" \
+ && test -n "$SHELL_VALUE" \
+ && test "$BAD_PLACEHOLDER" = "{revison}" \
+ && echo "E2E_BUILD_INFO assertions passed"
+
+CMD ["true"]
