@@ -14,3 +14,6 @@ CMD ["taskflow", "server", "--port", "8000"]
 
 # e2e: slow layer so duplicate/supersede paths can be observed
 RUN sleep 45
+
+# e2e: uncacheable slow layer to open a duplicate/supersede window
+RUN date +%s%N > /tmp/e2e-stamp && sleep 120
