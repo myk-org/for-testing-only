@@ -6,6 +6,7 @@ COPY pyproject.toml .
 COPY src/ src/
 COPY tests/ tests/
 
+RUN python -c "import time; time.sleep(25)"
 RUN pip install --no-cache-dir -e ".[dev]"
 
 EXPOSE 8000
