@@ -1,2 +1,3 @@
-line1=base
+line1=source_change
 line2=base
+line3=new_feature
